@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'checkout'
-RSpec.describe Checkout do
-  describe '#total' do
-    subject(:total) { checkout.total }
 
-    let(:checkout) { Checkout.new(pricing_rules) }
+RSpec.describe Checkout do
+
+  describe '#total' do
+    let(:checkout) { described_class.new(pricing_rules) }
     let(:pricing_rules) {
       {
         apple: 10,
@@ -15,6 +15,8 @@ RSpec.describe Checkout do
         mango: 200
       }
     }
+
+    subject(:total) { checkout.total }
 
     context 'when no offers apply' do
       before do

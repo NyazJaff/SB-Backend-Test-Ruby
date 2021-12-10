@@ -1,36 +1,21 @@
 
-class Checkout
-  attr_reader :prices
-  private :prices
+require_relative '../app/models/item'
+require 'total_item_cost'
 
-  def initialize(prices)
-    @prices = prices
-  end
+# This class is to handle checkout and apply discounts
+class Checkout
 
   def scan(item)
-    basket << item.to_sym
+    # when having active record we could replace the key here from name to ID
+    basket << { item.name.to_sym => item }
   end
 
   def total
     total = 0
 
     basket.inject(Hash.new(0)) { |items, item| items[item] += 1; items }.each do |item, count|
-      if item == :apple || item == :pear
-        if (count % 2 == 0)
-          total += prices.fetch(item) * (count / 2)
-        else
-          total += prices.fetch(item) * count
-        end
-      elsif item == :banana || item == :pineapple
-        if item == :pineapple
-          total += (prices.fetch(item) / 2)
-          total += (prices.fetch(item)) * (count - 1)
-        else
-          total += (prices.fetch(item) / 2) * count
-        end
-      else
-        total += prices.fetch(item) * count
-      end
+      item = item.values[0]
+      total += TotalItemCost.new(item, count).total
     end
 
     total
